@@ -9,6 +9,7 @@ import java.sql.Statement;
 import model.ComplainModel;
 import model.UserModel;
 import utils.DatabaseManager;
+import utils.Encryptor;
 
 public class UserDAO {
 	DatabaseManager dbm;
@@ -25,11 +26,11 @@ public class UserDAO {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, user.getUserName());
 			preparedStatement.setString(2, user.getEmail());
+			user.setPassword(new Encryptor().encrypt(user.getPassword()));
 			preparedStatement.setString(3, user.getPassword());
 			preparedStatement.executeUpdate();
-			System.out.println("Data inserted successfully...");
+			//System.out.println("Data inserted successfully...");
 			return true;
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -46,15 +47,15 @@ public class UserDAO {
 			statement = conn.createStatement();
 			results = statement.executeQuery("SELECT * FROM users where email=\"" + email + "\"");
 
-			if(results.next()) {
+			if (results.next()) {
 				user.setUserName(results.getString("username"));
 				user.setEmail(results.getString("email"));
-				user.setPassword(results.getString("password"));
+				user.setPassword(new Encryptor().decrypt(results.getString("password")));
 				user.setId(results.getString("id"));
 				results.close();
-				return user;	
-			}else {
-				return  null;
+				return user;
+			} else {
+				return null;
 			}
 
 		} catch (SQLException e) {
@@ -74,7 +75,7 @@ public class UserDAO {
 			while (results.next()) {
 				user.setUserName(results.getString("username"));
 				user.setEmail(results.getString("email"));
-				user.setPassword(results.getString("password"));
+				user.setPassword(new Encryptor().decrypt(results.getString("password")));
 				user.setId(results.getString("id"));
 				results.close();
 				return user;

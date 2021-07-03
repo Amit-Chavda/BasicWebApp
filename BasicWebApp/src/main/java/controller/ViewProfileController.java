@@ -19,7 +19,6 @@ public class ViewProfileController extends HttpServlet {
 		HttpSession session = req.getSession(false);
 		UserDAO dao = new UserDAO();
 		UserModel user = dao.getByEmail(session.getAttribute("email").toString());
-		System.out.print(user.getEmail());
 		req.setAttribute("user", user);
 		req.getRequestDispatcher("profile.jsp").forward(req, res);
 	}
